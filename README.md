@@ -15,4 +15,4 @@ Alternatively, feel free to open it up in Android Studio and freshly build & ins
 
 ## Personalization Instructions
 in writing. 
-![Bad Pulse 1](personalization_module/Images/bad_pulse_signal?raw=true "Bad Pulse Signal")
+![Bad Pulse 1](personalization_module/Images/bad_pulse_signal)
