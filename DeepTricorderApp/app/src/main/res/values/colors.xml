@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tfe_color_primary">#ffa800</color>
+    <color name="tfe_color_primary_dark">#ff6f00</color>
+    <color name="tfe_color_accent">#425066</color>
+
+    <color name="tfe_semi_transparent">#66000000</color>
+
+    <color name="solarized_red">#dc322f</color>
+    <color name="solarized_blue">#268bd2</color>
+
+    <color name="semi_transparent">#80FFFFFF</color>
+    <color name="translucent_blue">#BF0073FF</color>
+
+    <color name="light_green">#ff90ee90</color>
+    <color name="light_red">#ffee9090</color>
+</resources>

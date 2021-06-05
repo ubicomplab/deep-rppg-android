@@ -1,0 +1,36 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme.ImageClassification" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/tfe_color_primary</item>
+        <item name="colorPrimaryDark">@color/tfe_color_primary_dark</item>
+        <item name="colorAccent">@color/tfe_color_accent</item>
+    </style>
+
+    <style name="PulsePlot">
+        <item name="graphMarginTop">0dp</item>
+        <item name="graphMarginBottom">0dp</item>
+        <item name="graphMarginLeft">0dp</item>
+        <item name="graphMarginRight">0dp</item>
+        <item name="graphHeightMode">fill</item>
+        <item name="graphWidthMode">fill</item>
+        <item name="graphHeight">0</item>
+        <item name="graphWidth">0</item>
+        <item name="domainLineThickness">1dp</item>
+        <item name="graphHorizontalPositioning">absolute_from_left</item>
+        <item name="graphVerticalPositioning">absolute_from_top</item>
+        <item name="rangeLineThickness">1dp</item>
+        <item name="graphAnchor">left_top</item>
+        <item name="graphHorizontalPosition">0dp</item>
+        <item name="graphVerticalPosition">0dp</item>
+        <item name="legendVisible">false</item>
+        <item name="domainLineColor">@color/off_white</item>
+        <item name="rangeLineColor">@color/off_white</item>
+        <item name="backgroundColor">@color/off_white</item>
+        <item name="gridBackgroundColor">@color/off_white</item>
+        <item name="borderColor">@color/off_white</item>
+
+    </style>
+
+</resources>
