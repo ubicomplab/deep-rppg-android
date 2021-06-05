@@ -15,5 +15,7 @@ Alternatively, feel free to open it up in Android Studio and freshly build & ins
 
 ## Personalization Instructions
 These are what bad pulse signals look like: 
+
+Solarized dark             |  Solarized Ocean
 :-------------------------:|:-------------------------:
 ![Bad Pulse 1](personalization_module/Images/bad_pulse_signal.png)  |  ![Bad Pulse 2](personalization_module/Images/bad_pulse_signal_2.png)
