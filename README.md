@@ -14,5 +14,6 @@ To simply try out the app:
 Alternatively, feel free to open it up in Android Studio and freshly build & install it from there. 
 
 ## Personalization Instructions
-in writing. 
-![Bad Pulse 1](personalization_module/Images/bad_pulse_signal.png)
+These are what bad pulse signals look like: 
+:-------------------------:|:-------------------------:
+![Bad Pulse 1](personalization_module/Images/bad_pulse_signal.png)  |  ![Bad Pulse 2](personalization_module/Images/bad_pulse_signal_2.png)
