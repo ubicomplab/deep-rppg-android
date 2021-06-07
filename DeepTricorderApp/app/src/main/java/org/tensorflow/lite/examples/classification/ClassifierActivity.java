@@ -141,14 +141,12 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
                 @Override
                 public void run() {
                     if (classifier != null) {
-                      Log.d("Thyme", "Begin recognize: " + SystemClock.uptimeMillis());
                       Log.d("Bread", "Begin recognize: " + SystemClock.uptimeMillis());
                       final long startTime = SystemClock.uptimeMillis();
                       float[] results =
                               classifier.recognizeImage(bitmapBuffer.clone(), isRecording);
                       lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
                       Log.d("Bread", "Finish recognize: " + SystemClock.uptimeMillis());
-                      Log.d("Thyme", "Finish recognize: " + SystemClock.uptimeMillis());
 
                       runOnUiThread(
                               new Runnable() {

@@ -75,6 +75,7 @@ public abstract class CameraActivity extends AppCompatActivity
   private static final int PERMISSIONS_REQUEST = 1;
 
   private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
+  private final static String PERMISSION_WRITE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
   protected int previewWidth = 0;
   protected int previewHeight = 0;
   private Handler handler;
@@ -403,7 +404,8 @@ public abstract class CameraActivity extends AppCompatActivity
 
   private boolean hasPermission() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED;
+      return checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED &&
+              checkSelfPermission(PERMISSION_WRITE) == PackageManager.PERMISSION_GRANTED;
     } else {
       return true;
     }
@@ -419,6 +421,7 @@ public abstract class CameraActivity extends AppCompatActivity
             .show();
       }
       requestPermissions(new String[] {PERMISSION_CAMERA}, PERMISSIONS_REQUEST);
+      requestPermissions(new String[] {PERMISSION_WRITE}, PERMISSIONS_REQUEST);
     }
   }
 

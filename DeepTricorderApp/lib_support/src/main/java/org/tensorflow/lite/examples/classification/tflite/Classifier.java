@@ -197,10 +197,9 @@ public abstract class Classifier {
     // Logs this method so that it can be analyzed with systrace.
     Trace.beginSection("recognizeImage");
     Trace.beginSection("loadImage");
-    Log.d("Thyme" ,"Begin loading image: " + SystemClock.uptimeMillis());
     double[] Xsub = new double[20 * 36 * 36 * 3];
     double[][] dXsub = new double[20][36 * 36 * 3];
-
+    Log.d("Thyme" ,"Resize: " + SystemClock.uptimeMillis());
     long startTimeForLoadImages = SystemClock.uptimeMillis();
     for(int i = 0; i < bitmapBuffer.length; i++) {
       inputImageBuffer = loadImage(bitmapBuffer[i], i);
@@ -218,7 +217,7 @@ public abstract class Classifier {
       }
     }
 
-    Log.d("Thyme" ,"Begin appearance normalization: " + SystemClock.uptimeMillis());
+    Log.d("Thyme" ,"Normalize appearance: " + SystemClock.uptimeMillis());
     // normalize appearance
     double Xmean = calcMean(Xsub);
     double Xstd = calcSTD(Xsub, Xmean);
@@ -226,7 +225,7 @@ public abstract class Classifier {
       Xsub[i] = (Xsub[i] - Xmean) / Xstd;
     }
 
-    Log.d("Thyme" ,"Begin motion normalization: " + SystemClock.uptimeMillis());
+    Log.d("Thyme" ,"Normalize motion: " + SystemClock.uptimeMillis());
     // normalize motion
     double[][] dXSubFrames = new double[20][36 * 36 * 3];
     for(int i = 0; i < 19; i++) {
@@ -251,7 +250,7 @@ public abstract class Classifier {
       dXsubSerialized[i] = dXsubSerialized[i] / dXstd;
     }
 
-    Log.d("Thyme" ,"Prepare for inference: " + SystemClock.uptimeMillis());
+    Log.d("Thyme" ,"Infer vitals: " + SystemClock.uptimeMillis());
 
     input1Buffer.loadArray(convertDoubleToFloatArray(Xsub));
     input2Buffer.loadArray(convertDoubleToFloatArray(dXsubSerialized));
@@ -271,14 +270,13 @@ public abstract class Classifier {
     // Runs the inference call.
     Trace.beginSection("runInference");
     long startTimeForReference = SystemClock.uptimeMillis();
-    Log.d("Thyme" ,"Begin inference: " + SystemClock.uptimeMillis());
     tflite.runForMultipleInputsOutputs(inputBuffers, outputBuffers);
-    Log.d("Thyme" ,"End inference: " + SystemClock.uptimeMillis());
     long endTimeForReference = SystemClock.uptimeMillis();
     Trace.endSection();
     Log.v(TAG, "Timecost to run model inference: " + (endTimeForReference - startTimeForReference));
 
     Trace.endSection();
+    Log.d("Thyme" ,"Post-process: " + SystemClock.uptimeMillis());
 
     TensorBuffer pulseOutput = output1Processor.process(output1Buffer);
 
@@ -345,6 +343,7 @@ public abstract class Classifier {
       Log.d("Recording" ,"FINISHED");
     }
 
+    Log.d("Thyme" ,"Return: " + SystemClock.uptimeMillis());
     return results;
   }
 
