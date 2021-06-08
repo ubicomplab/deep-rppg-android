@@ -1,4 +1,4 @@
-from model import TS_CAN_BATCH, TSM, TSM_Cov2D, Attention_mask
+from ts_can_single import TS_CAN_single, TSM, TSM_Cov2D, Attention_mask
 import tensorflow as tf
 from tensorflow.python.keras import backend as K
 import os
@@ -8,9 +8,9 @@ def convert_to_tflite():
     img_rows = 36
     img_cols = 36
     frame_depth = 10 #NOTE: this was 10
-    model_checkpoint = 'personalized_model.hdf5'
+    model_checkpoint = 'ts_can_single_att.hdf5'
 
-    model = TS_CAN_BATCH(frame_depth, 32, 64, (img_rows, img_cols, 3))
+    model = TS_CAN_single(frame_depth, 32, 64, (img_rows, img_cols, 3))
     model.load_weights(model_checkpoint)
 
     converter = tf.lite.TFLiteConverter.from_keras_model(model)

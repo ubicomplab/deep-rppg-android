@@ -96,14 +96,10 @@ public abstract class Classifier {
   private TensorImage inputImageBuffer;
 
   /** Input images TensorBuffer. */
-  private TensorBuffer input1Buffer;
-  private TensorBuffer input2Buffer;
-  private ByteBuffer[] inputBuffers;
+  private TensorBuffer inputBuffer;
 
-  /** Output 1 TensorBuffer. */
-  private final TensorBuffer output1Buffer;
-
-  private Map<Integer, Object> outputBuffers;
+  /** Output TensorBuffer. */
+  private TensorBuffer outputBuffer;
 
   /** Processor to apply post processing of the output probability. */
   private final TensorProcessor output1Processor;
@@ -149,24 +145,22 @@ public abstract class Classifier {
     // Reads type and shape of input and output tensors, respectively.
     tflite.allocateTensors();
     Log.d("Anand", "Allocated tensors");
-    int[] input1Shape = tflite.getInputTensor(tflite.getInputIndex("input_1")).shape();
-    int[] input2Shape = tflite.getInputTensor(tflite.getInputIndex("input_2")).shape();
-    int[] output1Shape = tflite.getOutputTensor(tflite.getOutputIndex("Identity")).shape();
+    int[] inputShape = tflite.getInputTensor(tflite.getInputIndex("input_2")).shape();
+    int[] outputShape = tflite.getOutputTensor(tflite.getOutputIndex("Identity")).shape();
 
-    imageSizeY = input1Shape[1];
-    imageSizeX = input2Shape[2];
-    DataType imageDataType = tflite.getInputTensor(tflite.getInputIndex("input_1")).dataType();
+    imageSizeY = inputShape[1];
+    imageSizeX = inputShape[2];
+    DataType imageDataType = tflite.getInputTensor(tflite.getInputIndex("input_2")).dataType();
     DataType outputDataType = tflite.getOutputTensor(tflite.getOutputIndex("Identity")).dataType();
 
     Log.d("Anand", "Got shapes");
 
     // Creates the input tensor.
     inputImageBuffer = new TensorImage(imageDataType);
-    input1Buffer = TensorBuffer.createFixedSize(input1Shape, imageDataType);
-    input2Buffer = TensorBuffer.createFixedSize(input1Shape, imageDataType);
+    inputBuffer = TensorBuffer.createFixedSize(inputShape, imageDataType);
 
     // Creates the output tensors and its processors.
-    output1Buffer = TensorBuffer.createFixedSize(output1Shape, outputDataType);
+    outputBuffer = TensorBuffer.createFixedSize(outputShape, outputDataType);
 
     // Creates the post processors for the outputs.
     output1Processor = new TensorProcessor.Builder().build();
@@ -197,7 +191,6 @@ public abstract class Classifier {
     // Logs this method so that it can be analyzed with systrace.
     Trace.beginSection("recognizeImage");
     Trace.beginSection("loadImage");
-    double[] Xsub = new double[20 * 36 * 36 * 3];
     double[][] dXsub = new double[20][36 * 36 * 3];
     Log.d("Thyme" ,"Resize: " + SystemClock.uptimeMillis());
     long startTimeForLoadImages = SystemClock.uptimeMillis();
@@ -205,25 +198,12 @@ public abstract class Classifier {
       inputImageBuffer = loadImage(bitmapBuffer[i], i);
       float[] imageArray = inputImageBuffer.getTensorBuffer().getFloatArray();
       for (int j = 0; j < 3888; j++) {
-        Xsub[(i * 3888) + j] = (double) imageArray[j];
         dXsub[i][j] = (double) imageArray[j];
       }
     }
 
-    dXsub = new double[20][3888];
-    for(int i = 0; i < 20; i++) {
-      for(int j = 0; j < 3888; j++) {
-        dXsub[i][j] = Xsub[(3888 * i) + j];
-      }
-    }
-
     Log.d("Thyme" ,"Normalize appearance: " + SystemClock.uptimeMillis());
-    // normalize appearance
-    double Xmean = calcMean(Xsub);
-    double Xstd = calcSTD(Xsub, Xmean);
-    for(int i = 0; i < Xsub.length; i++) {
-      Xsub[i] = (Xsub[i] - Xmean) / Xstd;
-    }
+    // skip normalizing appearance
 
     Log.d("Thyme" ,"Normalize motion: " + SystemClock.uptimeMillis());
     // normalize motion
@@ -252,17 +232,9 @@ public abstract class Classifier {
 
     Log.d("Thyme" ,"Infer vitals: " + SystemClock.uptimeMillis());
 
-    input1Buffer.loadArray(convertDoubleToFloatArray(Xsub));
-    input2Buffer.loadArray(convertDoubleToFloatArray(dXsubSerialized));
+    inputBuffer.loadArray(convertDoubleToFloatArray(dXsubSerialized));
 
     // Prepare for inference
-    inputBuffers = new ByteBuffer[2];
-    inputBuffers[0] = input1Buffer.getBuffer();
-    inputBuffers[1] = input2Buffer.getBuffer();
-
-    outputBuffers = new TreeMap<Integer, Object>();
-    outputBuffers.put(tflite.getOutputIndex("Identity"), output1Buffer.getBuffer().rewind());
-
     long endTimeForLoadImages = SystemClock.uptimeMillis();
     Trace.endSection();
     Log.v(TAG, "Timecost preprocess images: " + (endTimeForLoadImages - startTimeForLoadImages));
@@ -270,7 +242,7 @@ public abstract class Classifier {
     // Runs the inference call.
     Trace.beginSection("runInference");
     long startTimeForReference = SystemClock.uptimeMillis();
-    tflite.runForMultipleInputsOutputs(inputBuffers, outputBuffers);
+    tflite.run(inputBuffer.getBuffer(), outputBuffer.getBuffer().rewind());
     long endTimeForReference = SystemClock.uptimeMillis();
     Trace.endSection();
     Log.v(TAG, "Timecost to run model inference: " + (endTimeForReference - startTimeForReference));
@@ -278,7 +250,7 @@ public abstract class Classifier {
     Trace.endSection();
     Log.d("Thyme" ,"Post-process: " + SystemClock.uptimeMillis());
 
-    TensorBuffer pulseOutput = output1Processor.process(output1Buffer);
+    TensorBuffer pulseOutput = output1Processor.process(outputBuffer);
 
     float[] results = new float[20];
 
